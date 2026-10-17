@@ -146,6 +146,51 @@ alternative breaks the half that works to half-fix the half that does not.
 
 ---
 
+## Retracted: the solver was destroying my encoded payload
+
+**Wrong, and I had blamed the solver for it in writing before checking.**
+
+Both routes carry a small per-particle state payload in the unused low bits of the diameter,
+because the solver carries one float per particle and the model needs a second number that
+survives the track and the rank boundary. The payload here is the particle's fracture energy,
+drawn once and never changed, so a particle that survives one impact at a given energy must
+survive every later impact at the same energy.
+
+One route was not behaving that way. Its particles kept breaking at energies they had already
+survived.
+
+The explanation I wrote down was that the solver recomputes the child diameter as
+`d_parent * N^(-1/3)` when a breakup factor is returned, and that this arithmetic destroys the
+encoded low bits.
+
+**It does not.** Both routines were rebuilt with one added line recording whether a payload was
+present at every wall interaction. Counting only records still at the parent size, meaning
+particles that have never broken:
+
+| route | records with a valid payload | without |
+|---|---:|---:|
+| six children | **60,385** | 24,697 |
+| one child | **0** | 4,534 |
+
+Payloads survive the round trip perfectly well. 61% of all wall interactions in the one-child
+route decode a valid payload, and every fragment carries one. The only path that loses it is the
+**no-break branch**, which leaves the diameter untouched and therefore attaches nothing. My own
+branch, not the solver's arithmetic.
+
+The consequence is that the route drew a fresh fracture energy at every contact, giving every
+particle a new chance to break at each impact rather than locking in the survivors. That
+deterministic difference, not any sampling effect, drove a large part of the population gap
+between the two routes, which is why no parcel count ever closed it.
+
+The fix is one branch: on the no-break path, return a breakup factor that reproduces the encoded
+diameter, so the survivor carries its state forward exactly as the other route does.
+
+**Rule taken from it:** the sentence "the tool is corrupting my data" needs an instrumented
+measurement behind it, not an inference from downstream behaviour. The instrumented run took an
+afternoon and the inference had already been written into two documents.
+
+---
+
 ## Stop chasing the number-rate ratio to 1.0
 
 Following from the two retractions above and the cutoff sweep. The reference's own number rate

@@ -172,17 +172,27 @@ took longer than finding either defect.
 The second wall in the same run reproduces all of it to three digits, so none of this is a
 one-surface artefact.
 
-The number rate looks like the important disagreement. It is not a disagreement at all, and the
-evidence for that is the useful part of this repository.
+The number rate looks like the important disagreement. It turned out to be two things stacked on
+top of each other, one a real defect and one not a disagreement at all, and separating them is
+the useful part of this repository.
 
 **It is not sampling noise.** That was the first explanation and it was wrong. Raising the parcel
 count a hundredfold, from 10,355 to 1,052,945 impacts, leaves the ratio at 2.53. It wanders
 between 2.4 and 2.8 with no trend towards 1. Monte-Carlo error falls as 1/√N, so a hundredfold
 increase would have collapsed any genuine variance effect beyond recognition.
 
-**It is a property of where you stop counting.** The number rate is dominated by the smallest
-fragments, and the fragment cutoff that decides whether they are tracked is a modelling choice
-rather than a physical quantity. Sweeping it in the reference route alone:
+**Part of it was a real defect, in my own code rather than the solver's.** Each route carries a
+small per-particle state payload in the unused low bits of the diameter, because the solver
+carries one float per particle. One route attached that payload only when a particle broke, so a
+particle that survived an impact was handed a fresh state at the next contact instead of keeping
+the one it had. That is deterministic, which is why no parcel count ever closed it. Fixing the
+branch removed most of the gap and left a residual of about 1.4. `DECISIONS.md` has the
+instrumented measurement, and the explanation I had written down before taking it, which blamed
+the solver and was wrong.
+
+**The residual is a property of where you stop counting.** The number rate is dominated by the
+smallest fragments, and the fragment cutoff that decides whether they are tracked is a modelling
+choice rather than a physical quantity. Sweeping it in the reference route alone:
 
 | fragment cutoff | reference number rate, relative to 2 µm | its own erosion |
 |---|---:|---:|
@@ -194,7 +204,9 @@ rather than a physical quantity. Sweeping it in the reference route alone:
 erosion moves by 0.5%.** Repeating the sweep with the generation cap of section 2 corrected to
 10 widens it to a factor of **22.0**, with mass flux and erosion still flat to within 2%. At a 2 µm cutoff, 75% of the reported number rate comes from the 1.3% of
 mass below 3.5 µm. A quantity that unstable in the reference cannot settle an argument between
-two routes, and chasing the ratio to 1.0 would have been chasing an artefact.
+two routes, and chasing the ratio to 1.0 would have been chasing an artefact. Across the same
+cutoff sweep the residual between routes moves from 1.785 to 1.348, which is the signature of a
+disagreement that lives entirely in the fines the cutoff controls.
 
 The box itself converges as expected, which is what justifies trusting the rest: ±22% at 634
 parcels, ±6.5% at 6,298, ±2.3% at 63,279, consistent with 1/√parcels.
