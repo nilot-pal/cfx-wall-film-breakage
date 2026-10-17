@@ -1,0 +1,20 @@
+# CFX run output
+*.res
+*.trk
+*.out
+*_001/
+*.def
+*.bak
+
+# compiled user routines
+*.dll
+*.lib
+*.exp
+*.obj
+*.mod
+winnt-amd64/
+lib/
+
+# python
+__pycache__/
+*.pyc
