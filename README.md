@@ -1,4 +1,4 @@
-# Two defects in ANSYS CFX wall-film breakage
+# Defects in ANSYS CFX wall-film breakage
 
 A simulation disagreed with an experiment and nobody could say why. The cause was a frame
 mismatch inside the solver, on a code path that had been in use for years. Tracking it down
@@ -6,7 +6,8 @@ turned up a second, unrelated defect: an undocumented parameter that silently st
 fragmentation cascade after three generations, so every wall-film run at the default has been
 under-counting fragments by about 30% without warning.
 
-Neither defect crashes. Neither prints a warning. Both produce plausible numbers.
+Neither defect crashes. Neither prints a warning. Both produce plausible numbers. A third, the same
+frame problem in a second code path, is in section 3, and there the correction works.
 
 Tested on **ANSYS CFX 2023 R2 (v232)**, Windows, Intel MPI. Earlier and later versions are
 untested and the behaviour may differ.
