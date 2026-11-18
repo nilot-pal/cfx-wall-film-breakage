@@ -221,6 +221,12 @@ why".
 
 As of this writing it is reported and not adjudicated, and the README says so.
 
+**Update, November 2026.** ANSYS Development reproduced the frame defect and corrected it in
+release 27R2. Their description is that in a rotating domain, child particles created at walls
+were given the wrong starting position as well as the wrong velocity. The choice above is worth
+recording as a result rather than a preference: the report opened with a reproducible measurement
+and a narrow question rather than with a diagnosis, and it was answered with a code change.
+
 ---
 
 ## Do not ship the solver input files

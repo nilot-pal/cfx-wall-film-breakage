@@ -91,10 +91,10 @@ The vendor's page on *standard particle-wall interaction* states that a moving w
 wall frame. Its page on the *user-defined wall film* path describes the child-velocity return
 with no frame specified at all. The ambiguity is in the documentation, not only in the code.
 
-**Status: reported to ANSYS in September 2026. Not adjudicated.** Nothing here should be read as
-the vendor having confirmed a defect. The mechanism inside the solver is `[INFERRED]`, since the
-source is closed; what is measured is the input, the output, and the one variable that changes
-between them.
+**Status: reported to ANSYS in September 2026, confirmed by ANSYS Development in November 2026,
+and corrected in release 27R2.** Their description is that in a rotating domain, child particles
+created at walls were given the wrong starting position as well as the wrong velocity. What is
+measured below is the input, the output, and the one variable that changes between them.
 
 ### A caveat before you apply the obvious repair
 
@@ -105,8 +105,9 @@ of 1.59.
 It does not follow that it is deployable. In a full rotating machine the same correction
 destabilises: impact counts explode and median impact speeds become unphysical. Those runs are
 on geometry that is not published here, so no numbers are given for them. Whether the fault then
-lies in the returned value or in the solver's own particle-wall separation test is not
-observable from outside CFX, and that is the part still open with the vendor.
+lies in the returned value or in the solver's own particle-wall separation test is not observable
+from outside CFX. ANSYS's description of the defect includes a wrong starting position as well as
+a wrong velocity, which is consistent with what is seen here.
 
 Treat the `+U` repair as a diagnostic that confirms the mechanism, not as a fix. The route in
 section 3 avoids the affected code path instead.
@@ -233,10 +234,12 @@ parcels, ±6.5% at 6,298, ±2.3% at 63,279, consistent with 1/√parcels.
 
 ## Caveats
 
-- **The vendor has confirmed nothing.** Both defects are reported, not adjudicated.
+- **Vendor status.** The frame defect in section 1 is confirmed by ANSYS Development and corrected
+  in release 27R2. The generation cap in section 2 is reported, not adjudicated.
 - **One CFX version.** 2023 R2 (v232). Version dependence is likely and untested.
-- **The mechanism is inferred.** The source is closed. The measurements are not inferred; the
-  explanation of what the solver is doing internally is.
+- **The mechanism is inferred for section 2.** The source is closed, so the measurements are not
+  inferred but the explanation of what the solver is doing internally is. For section 1 the
+  vendor's own description of the fix confirms the mechanism.
 - **The `+U` repair is not a fix.** See the caveat in section 1. Do not deploy it on the strength
   of the box result.
 - **The box cannot speak about transport.** It runs with drag disabled, so every fragment follows
