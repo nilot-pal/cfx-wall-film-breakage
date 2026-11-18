@@ -12,6 +12,28 @@ frame problem in a second code path, is in section 3, and there the correction w
 Tested on **ANSYS CFX 2023 R2 (v232)**, Windows, Intel MPI. Earlier and later versions are
 untested and the behaviour may differ.
 
+## Vendor status, November 2026
+
+**ANSYS Development reproduced the frame defect and corrected it in the solver.** The change is in
+release **27R2**, which ANSYS says will be released in summer 2027. Support ticket 00630421.
+
+Their description is that in a rotating domain, child particles created at walls were given the
+wrong **starting position** as well as the wrong velocity.
+
+The position error was not part of my diagnosis, and it may be the missing piece of section 1.
+Correcting only the returned velocity is exact in the box case but runs away in the machine, where
+a majority of fragments re-impact within microns of birth. A child placed at the wrong position
+would do exactly that. I had no way to separate the two causes from outside the solver.
+
+What is still open is whether the change also covers the second code path in section 3, the
+user-defined injection region, which reads the velocity it is given in the lab frame. ANSYS
+described the fix in terms of particles created at walls, so section 3 may be unaffected by it.
+
+So: if you are on 27R2 or later, section 1 should no longer apply, and I would be glad to hear
+whether the reproducer here returns 0.5000 for you. On 2023 R2 and other earlier releases the
+behaviour below is what I measured. Section 2, the generation cap, is a separate finding and
+nothing here says it has changed.
+
 Everything here runs in a synthetic box: a 10 mm gap, 100 µm particles, no real geometry. That
 is deliberate. Every result below is reproducible by anyone with a CFX licence and none of it
 depends on the application the work came from.
